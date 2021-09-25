@@ -39,6 +39,30 @@ public:
 		this->comentario = comentario;
 	}
 };
+class Grupo
+{
+private:
+	int numeroG;
+	ListaDoble<Alumno*> grupo;
+public:
+	Grupo(int numeroG=0):numeroG(numeroG){}
+	~Grupo() { grupo.eraseAll(); }
+	void addalumno(Alumno* alumn){
+		grupo.pushBack(alumn);
+	}
+	void printGrupo() {
+		cout << "Grupo " << numeroG << "\n";
+		auto mostrar = [](Alumno* a)->void {cout << a->getInfo(); };
+		grupo.print(mostrar);
+	}
+	int getnrGrpo(){
+		return numeroG;
+	}
+	Alumno*& getalumno(string nombre){
+		auto cumplecon = [=](Alumno* al)->bool {return al->getNombre() == nombre; };
+		return grupo.cumplecondicion(cumplecon);
+	}
+};
 
 class Curso
 {
@@ -304,3 +328,247 @@ public:
 		return cursos.empty();
 	}
 };
+void InterfazProfesor_Estudiante(Archivos*& archi,bool profesor) {
+	int opcion = 0;
+	string curso = "";
+	string nombre = "";
+	string line;
+	string apellido = "";
+	bool ida = false;
+	int opcpeque = 0;
+	float nota = 0;
+	int grupo = 0;
+	bool nopaara = true;
+	while (nopaara){
+		system("cls");
+		do {
+			system("cls");
+			cout << "--------Bienvenido----------\n";
+			cout << "1._Ver TODA la lista de Estudiantes por cada curso\n";
+			if (profesor){
+				cout << "2._Modificar la nota de un estudiante del curso tal\n";
+				cout << "3._Add nuevo estudiante a un  curso y a un grupo\n";
+				cout << "4._Add Comentario a un estudiante\n";
+				cout << "5._Lista Estudiantes del Curso tal con letra inicial\n";
+				cout << "6._Exit Modo Profesor\n";
+			}else{
+				cout << "2._Ver lista de estudiantes por curso ingresado\n";
+				cout << "3._Mostrar el grupo de un curso\n";
+				cout << "4._Ordenar por notas de los estudiantes de determinado curso (Ascendente o descendente)\n";
+				cout << "5._Lista Estudiantes del Curso tal con letra final\n";
+				cout << "6._Exit Modo Estudiante";
+			}
+			cin >> opcion;
+		} while (opcion<1||opcion>6);
+		system("cls");
+		if (profesor){
+			switch (opcion)
+			{
+			case 1: archi->mostrarTodos();
+				getline(cin, line);
+				getline(cin, line);
+				break;
+			case 2: 
+				do{
+					system("cls");
+					cout << "Ingrese Curso:\n";
+					getline(cin, curso);
+				}while(!archi->encontrar(curso));
+				do{
+					system("cls");
+					cout << "Ingrese nombre del Estudiante:\n";
+					cin >> nombre;
+					cout << "\nIngrese Nota\n";
+					cin >> nota;
+				}while((!archi->encontrar_Estu(curso, nombre))||nota<0||nota>20);
+				archi->modicarNota(curso, nombre,nota);
+				break;
+			case 3:
+				do {
+					system("cls");
+					cout << "Ingrese Curso:\n";
+					getline(cin, curso);
+				} while (archi->noestaaqui(curso));
+				system("cls");
+				cout << "Ingrese nombre del Nuevo Estudiante:\n";
+				cin >> nombre;
+				system("cls");
+				cout << "Ingrese apellido del Nuevo Estudiante:\n";
+				cin >> apellido;
+				do{
+					system("cls");
+					cout << "Ingrese el grupo al que pertenecera\n";
+					cin >> opcpeque;
+				} while (opcpeque<1||opcpeque>archi->getnrgrupo(curso)+1);
+				archi->addnuevoestudiante(new Alumno(nombre,apellido,opcpeque),curso,opcpeque);
+				break;
+			case 4:
+				do {
+					system("cls");
+					cout << "Ingrese Curso:\n";
+					getline(cin, curso);
+				} while (!archi->encontrar(curso));
+				do {
+					system("cls");
+					cout << "Ingrese nombre del Estudiante:\n";
+					cin >> nombre;
+				} while ((!archi->encontrar_Estu(curso, nombre)));
+				cout << "Ingrese el comentario:\n";
+				getline(cin, line);
+				getline(cin, line);
+				archi->addcoment(line, nombre, curso);
+				break;
+			case 5:
+				do {
+					system("cls");
+					cout << "Ingrese Curso:\n";
+					getline(cin, curso);
+				} while (!archi->encontrar(curso));
+				cout << "Ingrese iniciales del estudiante:\n";
+				cin >> line;
+				archi->beginwith(line,curso);
+				system("pause");
+				break;
+			case 6:nopaara = false;
+			default:break;
+			}
+		}else{
+			switch (opcion)
+			{
+			case 1:archi->mostrarTodos();
+				getline(cin, line);
+				getline(cin, line);
+				break;
+			case 2:
+				do{
+					cout << "\nIngrese curso\n";
+					getline(cin, curso);
+				}while(!archi->encontrar(curso));
+				archi->mostrarByCourse(curso); 
+				getline(cin, line);
+				getline(cin, line);
+				break;
+			case 3:
+				do{
+					cout << "\nIngrese Curso\n";
+					getline(cin, curso);
+				}while(!archi->encontrar(curso));
+				do{
+					cout << "Ingrese Grupo\n";
+					cin >> grupo;
+				}while(grupo > archi->getnrgrupo(curso) || grupo < 0);
+				archi->mostrarByCourseByGroup(curso, grupo);
+				getline(cin, line);
+				getline(cin, line);
+				break;
+			case 4:
+					do{
+						system("cls");
+						cout << "\n1._Mostrar Ascendente\n";
+						cout << "2._Mostrar Descendente\n";
+						cin >> opcpeque;
+					} while (opcpeque < 1 || opcpeque>2);
+					do{
+						system("cls");
+						cout << "\nIngrese Curso:\n";
+						getline(cin, curso);
+					} while (!archi->encontrar(curso));
+					system("cls");
+					if (opcpeque==1){
+						auto orde = [](Alumno* a, Alumno* b)->bool {return a->getNota() > b->getNota(); };
+						archi->mostrarByOrden(curso, orde);
+						getline(cin, line);
+						getline(cin, line);
+					}else{
+						auto orde = [](Alumno* a, Alumno* b)->bool {return a->getNota() < b->getNota(); };
+						archi->mostrarByOrden(curso, orde);
+						getline(cin, line);
+						getline(cin, line);
+					}
+					do{
+						cout << "\n¿Quiere mostrarlo de forma invertida?\n";
+						cout << "1._Si\n";
+						cout << "2._No\n";
+						cin >> opcpeque;
+					} while (opcpeque<1||opcpeque>2);
+					if (opcpeque==1){
+						archi->invertirM(curso);
+						getline(cin, line);
+						getline(cin, line);
+					}
+					break;
+			case 5:
+					do {
+						system("cls");
+						cout << "Ingrese Curso:\n";
+						getline(cin, curso);
+					} while (!archi->encontrar(curso));
+					cout << "Ingrese iniciales del estudiante:\n";
+					cin >> line;
+					archi->endWith(line,curso);
+					system("pause");
+					break;
+			case 6:
+				nopaara = false;
+			default:break;
+			}
+		}
+	}
+}
+void interfazvisual() {
+	int opcion = 0;
+	string nombrearch="";
+	string contra;
+	string line = "";
+	Archivos* archi = new Archivos();
+	while (true){
+		system("cls");
+		do{
+			system("cls");
+			cout << "--------Bienvenido----------\n";
+			cout << "1._Cargar Datos\n";
+			cout << "2._Ingresa a ver/modificar datos\n";
+			cin >> opcion;
+		} while (opcion<1||opcion>2);
+		switch (opcion)
+		{
+		case 1: cout << "Ingrese el archivo curso a cargar\n";
+			cin >> nombrearch;
+			archi->leernuevo(nombrearch);
+			cout << "Carga de datos Completada";
+			archi->mostrarTodos();
+			getline(cin, line);
+			getline(cin, line);
+			break;
+		case 2: 
+			if (archi->vacio()){
+				cout << "\nNo hay archivos disponibles\n";
+				getline(cin, line);
+				getline(cin, line);
+			}else{
+				do {
+					cout << "Ingresar contrasena de estudiante para ver datos\n";
+					cout << "Ingresar contrasena de profesor para modificar datos\n";
+					cin >> contra;
+				} while (contra != "Walter" && contra != "Estudiante");
+				if (contra == "Walter") {
+					InterfazProfesor_Estudiante(archi, 1);
+				}
+				else {
+					InterfazProfesor_Estudiante(archi, 0);
+				}
+			}
+			break;
+		default:break;
+		}
+	}
+	delete archi;
+}
+int main() {
+	interfazvisual();
+	string line;
+	getline(cin, line);
+	return 0;
+}
+
+
