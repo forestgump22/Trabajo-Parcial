@@ -1,14 +1,20 @@
 #pragma once
 template<typename T>
 class MVector {
+private:
+	int sizemin;
+	T* arr;
 public:
-	MVector() {
+	MVector(){
 		this->sizemin = 0;
 		arr = new T[this->sizemin];
 	}
+	T at(int i) {
+		return arr[i];
+	}
 	~MVector() {
 		for (int i = 0; i < sizemini(); i++) {
-			delete arr[i];
+			this->erase(i);
 		}
 		delete[] arr;
 	}
@@ -33,9 +39,7 @@ public:
 	int	sizemini() {
 		return sizemin;
 	}
-	T at(int i) {
-		return arr[i];
-	}
+	
 	int begin() {
 		return 0;
 	}
@@ -58,7 +62,4 @@ public:
 		}
 		else { return; }
 	}
-private:
-	int sizemin;
-	T* arr;
 };
