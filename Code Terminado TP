@@ -519,6 +519,7 @@ void interfazvisual() {
 	int opcion = 0;
 	string nombrearch="";
 	string contra;
+	ifstream archpruba;
 	string line = "";
 	Archivos* archi = new Archivos();
 	while (true){
@@ -532,8 +533,13 @@ void interfazvisual() {
 		} while (opcion<1||opcion>2);
 		switch (opcion)
 		{
-		case 1: cout << "Ingrese el archivo curso a cargar\n";
-			cin >> nombrearch;
+		case 1: 
+			do
+			{
+				cout << "Ingrese el archivo curso a cargar\n";
+				cin >> nombrearch;
+				archpruba.open(nombrearch);
+			} while (archpruba.fail());
 			archi->leernuevo(nombrearch);
 			cout << "Carga de datos Completada";
 			archi->mostrarTodos();
@@ -570,3 +576,5 @@ int main() {
 	getline(cin, line);
 	return 0;
 }
+
+
