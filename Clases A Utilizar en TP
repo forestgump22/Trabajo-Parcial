@@ -297,4 +297,34 @@ public:
 		auto comparar = [=](Curso* cur)->bool {return cur->getNombre() == curso; };
 		cursos.cumplecondicion(comparar)->invertir_y_mostrar();
 	}
+	bool encontrar_Estu(string curso,string estudiante) {
+		auto comparar = [=](Curso* cur)->bool {return cur->getNombre() == curso; };
+		return cursos.cumplecondicion(comparar)->encontrarest(estudiante);
+	}
+	void modicarNota(string curso, string nombre, float notanueva) {
+		auto comparar = [=](Curso* cur)->bool {return cur->getNombre() == curso; };
+		return cursos.cumplecondicion(comparar)->modificarnota(nombre, notanueva);
+	}
+	void addnuevoestudiante(Alumno* al,string curso,int nrgrupo) {
+		auto comparar = [=](Curso* cur)->bool {return cur->getNombre() == curso; };
+		cursos.cumplecondicion(comparar)->addNuevoAlumno(al, nrgrupo);
+	}
+	void beginwith(string line, string curso) {
+		auto comparar = [=](Curso* cur)->bool {return cur->getNombre() == curso; };
+		auto comp = [&](Alumno* al)->bool {return (al->getNombre().substr(0, line.size()) == line); };
+		cursos.cumplecondicion(comparar)->begin_endWith(comp);
+	}
+	void endWith(string line,string curso){
+		auto comparar = [=](Curso* cur)->bool {return cur->getNombre() == curso; };
+		auto comp = [&](Alumno* al)->bool {return (al->getNombre().substr(line.size(),
+			al->getNombre().size()) == line); };
+		cursos.cumplecondicion(comparar)->begin_endWith(comp);
+	}
+	void addcoment(string comentario,string nombre,string curso) {
+		auto comparar = [=](Curso* cur)->bool {return cur->getNombre() == curso; };
+		cursos.cumplecondicion(comparar)->getalumno(nombre)->setcoment(comentario);
+	}
+	bool vacio() {
+		return cursos.empty();
+	}
 };
