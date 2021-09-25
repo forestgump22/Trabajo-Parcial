@@ -39,30 +39,6 @@ public:
 		this->comentario = comentario;
 	}
 };
-class Grupo
-{
-private:
-	int numeroG;
-	ListaDoble<Alumno*> grupo;
-public:
-	Grupo(int numeroG=0):numeroG(numeroG){}
-	~Grupo() { grupo.eraseAll(); }
-	void addalumno(Alumno* alumn){
-		grupo.pushBack(alumn);
-	}
-	void printGrupo() {
-		cout << "Grupo " << numeroG << "\n";
-		auto mostrar = [](Alumno* a)->void {cout << a->getInfo(); };
-		grupo.print(mostrar);
-	}
-	int getnrGrpo(){
-		return numeroG;
-	}
-	Alumno*& getalumno(string nombre){
-		auto cumplecon = [=](Alumno* al)->bool {return al->getNombre() == nombre; };
-		return grupo.cumplecondicion(cumplecon);
-	}
-};
 
 class Curso
 {
