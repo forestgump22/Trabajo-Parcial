@@ -36,30 +36,6 @@ private:
 		_InvertRecursi(end->back,listaaux);
 		listaaux.pushFront(end->dato);
 	}
-	void _rotar2() {
-		end = end->back;
-		end->next->next = begin;
-		begin->back = end->next;
-		begin = end->next;
-		end->next = nullptr;
-		begin->back = nullptr;
-	}
-	void _recursiRotar1(int cont, int cant) {
-		if (cont >= cant) {
-			end = aux;
-			begin = aux->next;
-			begin->back = nullptr;
-			end->next = nullptr;
-			return;
-		}
-		aux = aux->back;
-		_recursiRotar1(++cont, cant);
-	}
-	void _recursiRotar2(int cont, int cant) {
-		if (cont >= cant) { return; }
-		_rotar2();
-		_recursiRotar2(++cont, cant);
-	}
 public:
 	ListaDoble() {
 		size = 0;
