@@ -1,0 +1,300 @@
+#include"listasD.h"
+#include<fstream>
+#include"MIniVector.h"
+class Alumno
+{
+private:
+	string nombre;
+	string apellido;
+	string comentario;
+	float nota_TP;
+	int nroGrupo;
+public:
+	Alumno(string nombre="", string apellido="",  int nroGrupo=0, float nota_TP = 0)
+		:nombre(nombre), apellido(apellido),nroGrupo(nroGrupo), nota_TP(nota_TP) {
+		comentario = "";
+	}
+	~Alumno() {}
+	string getNombre() {
+		return nombre;
+	}
+	string getApellido() {
+		return apellido;
+	}
+	string getInfo() {
+		return this->nombre + "\t\t" + this->apellido + "\t"
+			+ std::to_string(this->nota_TP) + "\t" + std::to_string(this->nroGrupo) + "\t"
+			+comentario+"\n";
+	}
+	int getgrupo() {
+		return this->nroGrupo;
+	}
+	int getNota() {
+		return this->nota_TP;
+	}
+	void setNota(int nota){
+		this->nota_TP = nota;
+	}
+	void setcoment(string comentario) {
+		this->comentario = comentario;
+	}
+};
+class Grupo
+{
+private:
+	int numeroG;
+	ListaDoble<Alumno*> grupo;
+public:
+	Grupo(int numeroG=0):numeroG(numeroG){}
+	~Grupo() { grupo.eraseAll(); }
+	void addalumno(Alumno* alumn){
+		grupo.pushBack(alumn);
+	}
+	void printGrupo() {
+		cout << "Grupo " << numeroG << "\n";
+		auto mostrar = [](Alumno* a)->void {cout << a->getInfo(); };
+		grupo.print(mostrar);
+	}
+	int getnrGrpo(){
+		return numeroG;
+	}
+	Alumno*& getalumno(string nombre){
+		auto cumplecon = [=](Alumno* al)->bool {return al->getNombre() == nombre; };
+		return grupo.cumplecondicion(cumplecon);
+	}
+};
+
+class Curso
+{
+private:
+	string nombre;
+	string profesor;
+	string seccion;
+	int nroGrupos;
+	ListaDoble<Alumno*> alumnos;// para hacer la recursividad desde el end hacia atras y la implementacion de la funcion orden
+	MVector<string> comentarios;// para una buena gestion de datos
+public:
+	Curso(string nombre,string profesor,string seccion,int nrgrupos)
+		:nombre(nombre),profesor(profesor),seccion(seccion),nroGrupos(nrgrupos){
+	}
+	~Curso(){
+		alumnos.eraseAll();
+	}
+	void setnombre(string nombre) {
+		this->nombre = nombre;
+	}
+	string getNombre(){
+		return this->nombre;
+	}
+	string getProfe(){
+		return this->profesor;
+	}
+	string getSeccion(){
+		return this->seccion;
+	}
+	int getnrgrupo(){
+		return this->nroGrupos;
+	}
+	Alumno*& getalumno(string nombre){
+		auto cumplecon = [=](Alumno* al)->bool {return al->getNombre() == nombre; };
+		return alumnos.cumplecondicion(cumplecon);
+	}
+	void begin_endWith(function<bool(Alumno*)>comp) {
+		ListaDoble<Alumno* >lista;
+		alumnos.filterList(lista, comp);
+		lista.print([](Alumno* al)->void {cout << al->getInfo(); });
+	}
+	void setProfesor(string profesor){
+		this->profesor = profesor;
+	}
+	void setSeccion(string seccion){
+		this->seccion = seccion;
+	}
+	void setnrgrupos(int nrgrupos){
+		this->nroGrupos = nrgrupos;
+	}
+	void addNuevoAlumno(Alumno* alum,int nroGrupo){
+		alumnos.pushBack(alum);
+		if (nroGrupo>nroGrupos){
+			nroGrupos++;
+		}
+	}
+	void addAlumno(Alumno* alum, int nroGrupo) {
+		alumnos.pushBack(alum);
+	}
+	void ordenar(function<bool(Alumno*,Alumno*)> comparar) {
+		alumnos.ordenar(comparar);
+	}
+	void invertir_y_mostrar() {
+		ListaDoble<Alumno*> listaaux;
+		alumnos.InvertRecursi(listaaux);
+		listaaux.print([](Alumno* al)->void {cout << al->getInfo(); });
+	}
+	void getInfo() {
+		cout<< "Nombre del curso: " + nombre + "\n" +
+			"Profesor: " + profesor + "\n" +
+			"Seccion: " + seccion + "\n" +
+			"Numero de Grupos: " + std::to_string(nroGrupos) + "\n\n" +
+			"Alumnos: " + "\n"+"Nombre\t\t"+"Apellido\t"+"Nota\t"+"NroGrupo\t\tComentarios\n\n";
+		auto mostrar = [](Alumno* al)->void {cout << al->getInfo(); };
+		alumnos.print(mostrar);
+	}
+	/*void leer(string nombreArch) {
+		ifstream arch(nombreArch);
+		string nameStudent;
+		string lastname;
+		int nota;
+		int nrogrupo;
+		string line;
+		getline(arch, line);
+		nombre = line;
+		getline(arch, line);
+		profesor = line;
+		getline(arch, line);
+		seccion = line;
+		getline(arch, line);
+		nroGrupos = std::stoi(line);
+		int espacios = 3;
+		int i = 0;
+		int orden = 1;
+		while (arch>>line)
+		{
+			if (orden==1)
+			{
+				nameStudent = line;
+				orden = 2;
+			}
+			else if(orden == 2) {
+				lastname = line;
+				orden = 3;
+			}
+			else if (orden == 3) {
+				orden = 4;
+				nota = std::stoi(line);
+			}
+			else if (orden == 4) {
+				nrogrupo = std::stoi(line);
+				orden = 1;
+			}
+			if (i++>=espacios)
+			{
+				i = 0;
+				alumnos.pushBack(new Alumno(nameStudent, lastname, nota, nrogrupo));
+			}
+		}
+	}*/
+	void addcomentario(string comentario){
+		comentarios.push_backMini(comentario);
+	}
+	void showGrupo(int num) {
+		ListaDoble<Alumno*> lista;
+		auto compar = [=](Alumno* al)->bool {return al->getgrupo() == num; };
+		auto show = [](Alumno* al)->void {cout << al->getInfo(); };
+		alumnos.filterList(lista, compar);
+		lista.print(show);
+	}
+	bool encontrarest(string nombre) {
+		auto comprobar = [=](Alumno* a)->bool {return a->getNombre() == nombre; };
+		return alumnos.search(comprobar);
+	}
+	void modificarnota(string nombre, float notanueva) {
+		auto cumple = [=](Alumno* a)->bool{
+			return a->getNombre() == nombre;
+		};
+		alumnos.cumplecondicion(cumple)->setNota(notanueva);
+	}
+};
+
+class Archivos
+{
+private:
+	ListaDoble<Curso*> cursos;
+public:
+	Archivos() {}
+	~Archivos() {
+		cursos.eraseAll();
+	}
+	void leernuevo(string archnombre) {
+		ifstream arch(archnombre);
+		string nameStudent;
+		string nombrecurso;
+		string nombreprofe;
+		string nomnseccion;
+		int numbgrupos;
+		string lastname;
+		float nota;
+		int nrogrupo;
+		string line;
+		getline(arch, line);
+		nombrecurso = line;
+		getline(arch, line);
+		nombreprofe = line;
+		getline(arch, line);
+		nomnseccion = line;
+		getline(arch, line);
+		numbgrupos = std::stoi(line);
+		Curso* curso = new Curso(nombrecurso, nombreprofe, nomnseccion, numbgrupos);
+		int espacios = 3;
+		int i = 0;
+		int orden = 1;
+		while (arch >> line) {
+			if (orden == 1) {
+				nameStudent = line;
+				orden = 2;
+			}
+			else if (orden == 2) {
+				lastname = line;
+				orden = 3;
+			}
+			else if (orden == 3) {
+				orden = 4;
+				nota = std::stoi(line);
+			}
+			else if (orden == 4) {
+				nrogrupo = std::stoi(line);
+				orden = 1;
+			}
+			if (i++ >= espacios) {
+				i = 0;
+				curso->addAlumno(new Alumno(nameStudent, lastname, nrogrupo,nota),nrogrupo);
+			}
+		}
+		cursos.pushBack(curso);
+		arch.close();
+	}
+	void mostrarTodos(){
+		auto mostrar = [](Curso* cur)->void {cur->getInfo(); };
+		cursos.print(mostrar);
+	}
+	void mostrarByCourse(string curso){
+		auto comparar = [=](Curso* cur)->bool {return cur->getNombre() == curso; };
+		auto mostrar = [](Curso* a)->void {a->getInfo(); };
+		cursos.filterShow(comparar, mostrar);
+	}
+	int getnrgrupo(string curso){
+		auto comparar = [=](Curso* cur)->bool {return cur->getNombre() == curso; };
+		return cursos.cumplecondicion(comparar)->getnrgrupo();
+	}
+	bool encontrar(string nombre){
+		auto comparar = [=](Curso* cur)->bool {return cur->getNombre() == nombre; };
+		return cursos.search(comparar);
+	}
+	bool noestaaqui(string nombre) {
+		auto comparar = [=](Curso* cur)->bool {return cur->getNombre() == nombre; };
+		return !cursos.search(comparar);
+	}
+	void mostrarByCourseByGroup(string curso,int grupo) {
+		auto comparar = [=](Curso* cur)->bool {return cur->getNombre()== curso; };
+		auto mostrar = [=](Curso* a)->void {a->showGrupo(grupo); };
+		cursos.filterShow(comparar, mostrar);
+	}
+	void mostrarByOrden(string curso,function<bool(Alumno*,Alumno*)> orden) {
+		auto comparar = [=](Curso* cur)->bool {return cur->getNombre() == curso; };
+		cursos.cumplecondicion(comparar)->ordenar(orden);
+		mostrarByCourse(curso);
+	}
+	void invertirM(string curso) {
+		auto comparar = [=](Curso* cur)->bool {return cur->getNombre() == curso; };
+		cursos.cumplecondicion(comparar)->invertir_y_mostrar();
+	}
+};
