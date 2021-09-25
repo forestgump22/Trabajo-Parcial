@@ -316,7 +316,7 @@ public:
 	}
 	void endWith(string line,string curso){
 		auto comparar = [=](Curso* cur)->bool {return cur->getNombre() == curso; };
-		auto comp = [&](Alumno* al)->bool {return (al->getNombre().substr(line.size(),
+		auto comp = [&](Alumno* al)->bool {return (al->getNombre().substr(al->getNombre().size()-line.size(),
 			al->getNombre().size()) == line); };
 		cursos.cumplecondicion(comparar)->begin_endWith(comp);
 	}
@@ -503,7 +503,7 @@ void InterfazProfesor_Estudiante(Archivos*& archi,bool profesor) {
 						cout << "Ingrese Curso:\n";
 						getline(cin, curso);
 					} while (!archi->encontrar(curso));
-					cout << "Ingrese iniciales del estudiante:\n";
+					cout << "Ingrese letras finales del estudiante:\n";
 					cin >> line;
 					archi->endWith(line,curso);
 					system("pause");
@@ -570,5 +570,3 @@ int main() {
 	getline(cin, line);
 	return 0;
 }
-
-
