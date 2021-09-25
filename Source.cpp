@@ -1,78 +1,52 @@
-#include <iostream>
-#include "ListaDoble.h"
-#include "Curso.h"
-#include "Estudiante.h"
-#include "Profesor.h"
-#include <conio.h>
-
-using namespace std;
-
-void profesor()
-{
-	string name, contra;
-	bool existe = false;
-	Profesor Algoritmos("Walter","Algoritmos","Cueva", 30);
-	Profesor MDiscreta("Jonathan", "Matematica Discreta", "Sueros", 30);
-	Profesor MComputacional("Edgard", "Matematica Computacional", "Palacios", 30);
-	Profesor Requerimientos("Monica", "Especificacion y Analisis de Requerimientos", "Priale", 30);
-	Profesor Conta("Anita", "Contabilidad y Presupuestos", "Cruzado", 30);
-	ListaDoble<Profesor> profesores;
-	profesores.pushBack(Algoritmos);
-	profesores.pushBack(MDiscreta);
-	profesores.pushBack(MComputacional);
-	profesores.pushBack(Requerimientos);
-	profesores.pushBack(Conta);
-
-	do
-	{
+#include"listasD.h"
+#include<fstream>
+#include"MIniVector.h"
+void interfazvisual() {
+	int opcion = 0;
+	string nombrearch="";
+	string contra;
+	string line = "";
+	Archivos* archi = new Archivos();
+	while (true){
 		system("cls");
-		cout << "Ingrese su nombre y contrasenia: \n- NOMBRE: ";
-		cin >> name;
-		cout << "- CONTRASENIA: ";
-		cin >> contra;
-		for (size_t i = 0; i < profesores.getSize(); i++)
-			if (name == profesores.at(i).nombre && contra == profesores.at(i).contra)
-				existe = true;
-	} while (!existe);
-	
-	
-	cout << "Estos son los estudiantes a tu cargo:\n";
-	
-	for (size_t i = 0; i < profesores.at(0).estudiantes.size(); i++)
-	{
-		cout << profesores.at(1).estudiantes.at(i).nombre << endl;
+		do{
+			system("cls");
+			cout << "--------Bienvenido----------\n";
+			cout << "1._Cargar Datos\n";
+			cout << "2._Ingresa a ver/modificar datos\n";
+			cin >> opcion;
+		} while (opcion<1||opcion>2);
+		switch (opcion)
+		{
+		case 1: cout << "Ingrese el archivo curso a cargar\n";
+			cin >> nombrearch;
+			archi->leernuevo(nombrearch);
+			cout << "Carga de datos Completada";
+			archi->mostrarTodos();
+			getline(cin, line);
+			getline(cin, line);
+			break;
+		case 2: 
+			if (archi->vacio()){
+				cout << "\nNo hay archivos disponibles\n";
+				getline(cin, line);
+				getline(cin, line);
+			}else{
+				do {
+					cout << "Ingresar contrasena de estudiante para ver datos\n";
+					cout << "Ingresar contrasena de profesor para modificar datos\n";
+					cin >> contra;
+				} while (contra != "Walter" && contra != "Estudiante");
+				if (contra == "Walter") {
+					InterfazProfesor_Estudiante(archi, 1);
+				}
+				else {
+					InterfazProfesor_Estudiante(archi, 0);
+				}
+			}
+			break;
+		default:break;
+		}
 	}
-	_getch();
-
-}
-void estudiante()
-{
-
-}
-
-void interfaz()
-{
-	int opc;
-	do
-	{
-		cout << "Desea ingresar como: \n 1) profesor \n 2) estudiante \n";
-		cin >> opc;
-	} while (opc > 2 || opc < 1);
-	
-	if (opc == 1)
-		profesor();
-	else
-		estudiante();
-}
-
-int main()
-{
-	while(1)
-	{
-		interfaz();
-		system("cls");
-	}
-
-	system("pause");
-	return 0;
+	delete archi;
 }
